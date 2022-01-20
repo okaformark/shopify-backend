@@ -2,6 +2,16 @@ const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/controller');
 
+router.get('/', (req, res) => {
+	res.status(200).json({
+		status: 'success',
+		data: {
+			name: 'shopify back end',
+			version: '0.1.0',
+			mesage: 'Navigate to /api/product',
+		},
+	});
+});
 /**
  * @description create product Route
  * @method POST

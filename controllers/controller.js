@@ -23,7 +23,6 @@ exports.create = async (req, res) => {
 	await axios
 		.post(URL, body)
 		.then((response) => {
-			console.log(response.data);
 			res.json(response.data);
 		})
 		.catch((error) => res.status(400).send(error));
@@ -83,33 +82,53 @@ exports.delete = async (req, res) => {
 exports.exportExcel = async (req, res) => {
 	const workbook = new excelJS.Workbook();
 	const worksheet = workbook.addWorksheet('Products');
-	const path = '../files';
+	const path = './files';
+	workbook.views = [
+		{
+			x: 0,
+			y: 0,
+			width: 10000,
+			height: 20000,
+			firstSheet: 0,
+			activeTab: 1,
+			visibility: 'visible',
+		},
+	];
 
 	worksheet.columns = [
-		// { header: 'ID', key: 'id', width: 10 },
+		{ header: 'ID', key: 'id', width: 10 },
 		{ header: 'Name', key: 'Name', width: 30 },
 		{ header: 'Description', key: 'Description', width: 30 },
 		{ header: 'Category', key: 'Category', width: 30 },
 		{ header: 'Price', key: 'Price', width: 10 },
 		{ header: 'Quantity', key: 'Quantity', width: 10 },
 	];
+	res.setHeader(
+		'Content-Type',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+	);
+	res.setHeader('Content-Disposition', 'attachment; filename=products.xlsx');
 
-	await axios
-		.get(URL)
-		.then((response) => {
-			const data = JSON.parse(response.data.attributes);
-			data.forEach((element) => {
-				worksheet.addRow(element);
+	try {
+		const response = await axios.get(URL);
+		const data = res.json(response.data);
+		Array.from(data).forEach((element, index) => {
+			console.log(element);
+			let id = element.id;
+			let atrr = element.attribute;
+
+			worksheet.addRow({
+				...element,
+				id: id,
+				Name: atrr.Name,
+				Description: atrr.Description,
+				Category: atrr.Category,
+				Price: atrr.Price,
+				Quantity: atrr.Quantity,
 			});
-			res.setHeader(
-				'Content-Type',
-				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-			);
-			res.setHeader(
-				'Content-Disposition',
-				'attachment; filename=Products.xlsx'
-			);
-			workbook.xlsx.writeFile(`${path}/products.xlsx`).then(() => res.send());
-		})
-		.catch((error) => res.status(400).send(error));
+		});
+		workbook.xlsx.writeFile(`${path}/products.xlsx`);
+	} catch (error) {
+		console.log(error);
+	}
 };
