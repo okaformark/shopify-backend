@@ -36,6 +36,6 @@ router.delete('/api/product/:id', controller.delete);
  * @description export product Route
  * @method get
  */
-router.get('api/exportExcel', controller.exportExcel);
+router.get('/api/exportExcel', controller.exportExcel);
 
 module.exports = router;

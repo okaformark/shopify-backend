@@ -83,7 +83,7 @@ exports.delete = async (req, res) => {
 exports.exportExcel = async (req, res) => {
 	const workbook = new excelJS.Workbook();
 	const worksheet = workbook.addWorksheet('Products');
-	const path = './files';
+	const path = '../files';
 
 	worksheet.columns = [
 		// { header: 'ID', key: 'id', width: 10 },
@@ -109,7 +109,7 @@ exports.exportExcel = async (req, res) => {
 				'Content-Disposition',
 				'attachment; filename=Products.xlsx'
 			);
-			workbook.xlsx.writeFile(`${path}/products.xlsx`).then(() => res.end());
+			workbook.xlsx.writeFile(`${path}/products.xlsx`).then(() => res.send());
 		})
 		.catch((error) => res.status(400).send(error));
 };
