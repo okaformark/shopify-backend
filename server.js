@@ -9,6 +9,16 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/', (req, res) => {
+	res.status(200).json({
+		status: 'success',
+		data: {
+			name: 'shopify back end',
+			version: '0.1.0',
+		},
+	});
+});
+
 app.use('/', require('./routes/router'));
 
 const PORT = process.env.PORT || 5000;
